@@ -37,15 +37,15 @@ export const useBoard = (initialState) => {
   }
 
   /*
-    updateColumn(0)(edit, 3) =>   
-      (...args) => updateColumn(0)(edit(...args), 2) => 
-        (...args) => updateColumn(0)(edit(...args), 1) => 
+    composeDispatch(0)(edit, 3) =>   
+      (...args) => composeDispatch(0)(edit(...args), 2) => 
+        (...args) => composeDispatch(0)(edit(...args), 1) => 
           (...args) => setBoardState...
    */
 
-  const updateColumn = (columnIdx) => (updateFn, arity = 1) =>
+  const composeDispatch = (columnIdx) => (updateFn, arity = 1) =>
     arity > 1
-      ? (...args) => updateColumn(columnIdx)(updateFn(...args), arity - 1)
+      ? (...args) => composeDispatch(columnIdx)(updateFn(...args), arity - 1)
       : (...args) => {
           setBoardState((prevState) =>
             prevState.map((column, i) =>
@@ -74,9 +74,15 @@ export const useBoard = (initialState) => {
     const { removeTodo } = boardState[originColumnIdx]
     const { addTodo } = boardState[targetColumnIdx]
 
-    updateColumn(originColumnIdx)(removeTodo)(removalTodoIdx)
-    updateColumn(targetColumnIdx)(addTodo)(text)
+    composeDispatch(originColumnIdx)(removeTodo)(removalTodoIdx)
+    composeDispatch(targetColumnIdx)(addTodo)(text)
   }
 
-  return { boardState, addColumn, updateColumn, sendTodo, getNeighbors }
+  return {
+    boardState,
+    addColumn,
+    composeDispatch,
+    sendTodo,
+    getNeighbors,
+  }
 }

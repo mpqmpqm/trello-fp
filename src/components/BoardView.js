@@ -22,7 +22,7 @@ const BoardView = () => {
   const {
     boardState,
     addColumn,
-    updateColumn,
+    composeDispatch,
     sendTodo,
     getNeighbors,
   } = useBoard()
@@ -32,7 +32,7 @@ const BoardView = () => {
         {boardState.map((column, i) => (
           <ColumnView
             key={column.name + i}
-            updateColumn={updateColumn(i)}
+            composeAction={composeDispatch(i)}
             sendTodo={sendTodo(i)}
             getNeighbors={getNeighbors(i)}
             {...column}

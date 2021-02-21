@@ -37,15 +37,15 @@ const ColumnView = ({
   changeColor,
   addTodo,
   editTodo,
-  updateColumn,
+  composeAction,
   sendTodo,
   getNeighbors,
 }) => (
   <Div {...{ color }}>
     <ColumnTitle
       {...{ name, color }}
-      changeName={updateColumn(changeName)}
-      changeColor={updateColumn(changeColor)}
+      changeName={composeAction(changeName)}
+      changeColor={composeAction(changeColor)}
     />
     {todos.length ? (
       <TodoListView
@@ -54,10 +54,10 @@ const ColumnView = ({
           sendTodo,
           getNeighbors,
         }}
-        editTodo={updateColumn(editTodo, 2)}
+        editTodo={composeAction(editTodo, 2)}
       />
     ) : null}
-    <AddTodo addTodo={updateColumn(addTodo)} />
+    <AddTodo addTodo={composeAction(addTodo)} />
   </Div>
 )
 
