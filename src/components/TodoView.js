@@ -1,28 +1,33 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from "styled-components"
+import EditTodoView from "./EditTodoView"
 import SendButton from "./SendButton"
 
 const LI = styled.li`
   list-style-type: none;
   display: flex;
-  background-color: white;
   align-items: center;
 `
 
-const TodoView = ({ text, editTodo, updateColumn, sendTodo, neighbors }) => {
+const TodoView = ({ text, editTodo, sendTodo, left, right }) => {
+  const [editing, setEditing] = useState(false)
+
   const handleClick = () => {
-    const newText = window.prompt(`new text?`)
-    if (newText) updateColumn(editTodo(newText))
-    else updateColumn(editTodo(text))
+    setEditing(true)
   }
 
-  const { left, right } = neighbors
+  const close = () => setEditing(false)
+
   return (
     <LI>
       {typeof left === `number` && (
         <SendButton sendTodo={sendTodo(text, left)}>&larr;</SendButton>
       )}
-      <p onClick={handleClick}>{text}</p>
+      {editing ? (
+        <EditTodoView {...{ text, editTodo, close }} />
+      ) : (
+        <p onClick={handleClick}>{text}</p>
+      )}
       {typeof right === `number` && (
         <SendButton sendTodo={sendTodo(text, right)}>&rarr;</SendButton>
       )}

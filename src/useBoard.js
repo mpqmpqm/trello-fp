@@ -2,27 +2,29 @@ import { useState } from "react"
 
 const Column = ({
   name,
-  color = `lightgray`,
+  color = `#666666`,
   todos = [`${name} 1`, `${name} 2`],
 }) => ({
   name,
   color,
   todos,
-  addTodo: (text) => () => Column({ name, color, todos: [...todos, text] }),
-  editTodo: (idx) => (text) => () =>
+  changeName: (name) => Column({ name, color, todos }),
+  changeColor: (color) => Column({ name, color, todos }),
+  addTodo: (text) => Column({ name, color, todos: [...todos, text] }),
+  editTodo: (idx) => (text) =>
     Column({
       name,
       color,
       todos: todos.map((todo, i) => (i === idx ? text : todo)),
     }),
-  removeTodo: (idx) => () =>
+  removeTodo: (idx) =>
     Column({ name, color, todos: todos.filter((_, i) => i !== idx) }),
 })
 
 const defaultBoardState = [
   { name: `MPQ` },
-  { name: `Alice`, color: `lightpink` },
-  { name: `Sam`, color: `aliceblue` },
+  { name: `Alice`, color: `#d57676` },
+  { name: `Sam`, color: `#88c729` },
 ].map(Column)
 
 export const useBoard = (initialState) => {
@@ -34,36 +36,46 @@ export const useBoard = (initialState) => {
     setBoardState([...boardState, Column({ name, color, todos: [] })])
   }
 
-  const updateColumn = (idx) => (updateFn) => {
-    setBoardState((prevState) =>
-      prevState.map((column, i) => (i === idx ? updateFn() : column))
-    )
-  }
+  /*
+    updateColumn(0)(edit, 3) =>   
+      (...args) => updateColumn(0)(edit(...args), 2) => 
+        (...args) => updateColumn(0)(edit(...args), 1) => 
+          (...args) => setBoardState...
+   */
 
-  const getNeighbors = (idx) => () => {
-    const first = idx === 0
-    const last = idx === boardState.length - 1
+  const updateColumn = (columnIdx) => (updateFn, arity = 1) =>
+    arity > 1
+      ? (...args) => updateColumn(columnIdx)(updateFn(...args), arity - 1)
+      : (...args) => {
+          setBoardState((prevState) =>
+            prevState.map((column, i) =>
+              i === columnIdx ? updateFn(...args) : column
+            )
+          )
+        }
+
+  const getNeighbors = (columnIdx) => () => {
+    const first = columnIdx === 0
+    const last = columnIdx === boardState.length - 1
     const only = first && last
 
-    const neighbors = {
-      left: null,
-      right: null,
-    }
-
-    if (only) return neighbors
-
-    if (!first) neighbors.left = idx - 1
-    if (!last) neighbors.right = idx + 1
-
-    return neighbors
+    return only
+      ? { left: null, right: null }
+      : {
+          left: first ? null : columnIdx - 1,
+          right: last ? null : columnIdx + 1,
+        }
   }
 
-  const sendTodo = (originIdx) => (removalIdx) => (text, targetIdx) => () => {
-    const { removeTodo } = boardState[originIdx]
-    const { addTodo } = boardState[targetIdx]
+  const sendTodo = (originColumnIdx) => (removalTodoIdx) => (
+    text,
+    targetColumnIdx
+  ) => () => {
+    const { removeTodo } = boardState[originColumnIdx]
+    const { addTodo } = boardState[targetColumnIdx]
 
-    updateColumn(originIdx)(removeTodo(removalIdx))
-    updateColumn(targetIdx)(addTodo(text))
+    updateColumn(originColumnIdx)(removeTodo)(removalTodoIdx)
+    updateColumn(targetColumnIdx)(addTodo)(text)
   }
 
   return { boardState, addColumn, updateColumn, sendTodo, getNeighbors }

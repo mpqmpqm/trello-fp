@@ -5,22 +5,23 @@ import TodoView from "./TodoView"
 const UL = styled.ul`
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 4px 12px;
+  background-color: white;
 `
 
 const TodoListView = ({
   todos,
   sendTodo,
   editTodo,
-  neighbors,
   updateColumn,
+  getNeighbors,
 }) => (
   <UL>
     {todos.map((text, i) => (
       <TodoView
         key={text + i}
-        idx={i}
-        {...{ text, neighbors, updateColumn }}
+        {...{ text, updateColumn }}
+        {...getNeighbors()}
         sendTodo={sendTodo(i)}
         editTodo={editTodo(i)}
       />

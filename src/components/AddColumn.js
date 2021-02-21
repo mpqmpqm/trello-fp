@@ -18,9 +18,8 @@ const Button = styled.button`
 const AddColumn = ({ addColumn }) => {
   const handleClick = () => {
     const name = window.prompt(`Column name?`)
-    const color = window.prompt(`Valid HTML color?`)
 
-    if (name) addColumn({ name, color })
+    if (name) addColumn({ name })
   }
   return <Button onClick={handleClick}>Add column</Button>
 }

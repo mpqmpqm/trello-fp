@@ -3,19 +3,21 @@ import React from "react"
 import styled from "styled-components"
 
 const Button = styled.button`
-  background: none;
   border: none;
   color: darkgray;
   cursor: pointer;
   padding: 12px;
-  font-size: 1em;
+  font-size: 0.95em;
   font-style: italic;
+  appearance: none;
+  background-color: var(--board-background);
+  margin-top: 6px;
 `
 
-const AddTodo = ({ updateColumn, addTodo }) => {
+const AddTodo = ({ addTodo }) => {
   const handleClick = () => {
     const text = window.prompt(`New todo?`)
-    text && updateColumn(addTodo(text))
+    text && addTodo(text)
   }
   return <Button onClick={handleClick}>Add todo</Button>
 }

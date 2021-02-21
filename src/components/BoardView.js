@@ -15,6 +15,7 @@ const ColumnFlex = styled.div`
   display: flex;
   overflow: auto;
   flex-grow: 1;
+  padding: 0 12px;
 `
 
 const BoardView = () => {
